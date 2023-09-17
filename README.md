@@ -1,36 +1,24 @@
-# Celery Flower monitoring for Heroku
+# Celery Flower
 
-[Flower](https://github.com/mher/flower/) is a handy tool for monitoring [Celery](http://www.celeryproject.org/) processes. 
-As it's build on top of Tornado web server it needs it's own outside facing port and can't be run as part of your regular 
-Heroku app which only provides one ```web``` process type. Luckily Flower is really easy to install as another app and 
-can be run free of charge on Heroku.
+This project integrates Celery Flower monitoring with Grafana by sending metrics about your Celery queues and workers directly to Grafana. It uses Honcho to manage both the Celery Flower instance and the metrics-sending script on the same Heroku dyno.
 
-This project template/guide helps you to bootstrap the process and creates a simple app for running Flower.
+It would be better to do this integration by using prometheus in future:
+https://flower.readthedocs.io/en/latest/prometheus-integration.html
 
-Clone the repo:
+## Prerequisites
 
-    git clone https://github.com/iyanuashiri/celeroku.git
+- Python 3.x
+- A running Grafana instance
+- A configured Celery setup
+- Heroku account and CLI set up
 
-Create an Heroku app:
+## Environment Variables
 
-    heroku create APP_NAME
+You'll need to set the following environment variables:
 
-Configure the app by providing your broker url (RabbitMQ, Redis, what have you) and a password for logging into Flower:
-
-    heroku config:set BROKER_URL=redis://...
-    heroku config:set FLOWER_BASIC_AUTH="username:password"
-
-Push to heroku:
-
-    git push heroku master
-
-Now visit the app. It will ask for a username and a password which you defined above.
-
-
-Deploy flower to heroku button.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
-
-
-PS: This is a working version and one click deploy of https://github.com/jorilallo/celery-flower-heroku
+- `HEROKU_APP_DEFAULT_DOMAIN_NAME`: The default domain of your Heroku app where Celery Flower is running. 
+                                    (Comes from: `heroku labs:enable runtime-dyno-metadata -a appname`)
+- `FLOWER_BASIC_AUTH`: Basic authentication for Flower, in the format `username:password`.
+- `APP_ENV`: Your application's environment (e.g., `prod`).
+- `GRAPHITE_ID`: Identifier for your Graphite instance.
+- `WAIT_TIME_IN_SECONDS`: (Optional) Interval to wait before sending metrics again. Defaults to 1 minute.
